@@ -1,0 +1,80 @@
+---
+openapi: 3.0.1
+info:
+  title: Scheduler Service Backend API
+  description: Scheduler Service Backend API
+  version: 1.0.0
+
+paths:
+  /messages:
+    post:
+      summary: Register reservation
+      description: |
+        Register reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageRequest'
+            examples:
+              invoker-alpha:
+                value:
+                  publishTime: 1645670700
+                  channel: invoker-alpha
+                  parameters:
+                    message: An invocation message
+      responses:
+        '201':
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: 'xxxxxxx-xxxxxx-xxxxxxx-xxxxxxxx'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: Error message
+    MessageRequest:
+      type: object
+      required:
+        - publishTime
+        - channel
+      properties:
+        publishTime:
+          type: number
+          description: publish time in epoch
+        channel:
+          type: string
+          enum: [invoker-alpha, invoker-beta]
+          description: the channel in which to call
+        parameters:
+          type: object
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalServerError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
